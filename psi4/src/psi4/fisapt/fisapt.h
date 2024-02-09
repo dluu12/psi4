@@ -63,6 +63,7 @@ class FISAPT {
     /// Global JK object
     std::shared_ptr<JK> jk_;
 
+    std::shared_ptr<JK> jklr_;
     /// Map of scalars
     std::map<std::string, double> scalars_;
     /// Map of vectors
@@ -78,8 +79,18 @@ class FISAPT {
     // Build the Ind20 potential in the monomer A ov space
     std::shared_ptr<Matrix> build_ind_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
 
+    std::tuple<double,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Vector>,std::shared_ptr<Vector> > scf_calc_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::shared_ptr<Matrix> link_assignment_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::tuple<double,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Vector>,std::shared_ptr<Vector> > scf_unify2_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::tuple<double> elst_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::tuple<double,double> exch_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::tuple<double,double,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix> > ind_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+    std::tuple<double,double> fdisp_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
+
+    std::tuple<std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix>,std::shared_ptr<Matrix> > flocalize_pot(std::map<std::string, std::shared_ptr<Matrix> >& vars);
     // DFHelper object
     std::shared_ptr<DFHelper> dfh_;
+    std::shared_ptr<DFHelper> dfh_lr;   
 
     /// Helper to drop a matrix to filepath/A->name().dat
     /// Helper to drop a vector to filepath/A->name().dat
@@ -144,7 +155,7 @@ class FISAPT {
     /// Induction
     void find();
     /// Dispersion
-    void fdisp();
+  //  void fdisp();
     /// Output
     //  fdrop() moved py-side
 
@@ -157,7 +168,10 @@ class FISAPT {
     /// Exchange
     void exch();
     /// Induction
-    void ind();
+
+ //   void ind();
+    void ind_n_fdisp();
+
     /// Print SAPT results
     void print_trailer();
 
@@ -171,6 +185,7 @@ class FISAPT {
     std::map<std::string, double>& scalars() { return scalars_; }
     std::map<std::string, std::shared_ptr<Vector> >& vectors() { return vectors_; }
     std::map<std::string, std::shared_ptr<Matrix> >& matrices() { return matrices_; }
+//    std::map<std::string, std::shared_ptr<Matrix> >& matrices() { return scalars_; }
 };
 
 class FISAPTSCF {
@@ -222,13 +237,15 @@ class CPHF_FISAPT {
     int maxiter_;
     // JK Object
     std::shared_ptr<JK> jk_;
-
+    std::shared_ptr<JK> jklr_;
     // => Monomer A Problem <= //
 
     // Perturbation applied to A
     std::shared_ptr<Matrix> w_A_;
+    std::shared_ptr<Matrix> w_A_lr_;
     // Response of A
     std::shared_ptr<Matrix> x_A_;
+    std::shared_ptr<Matrix> x_A_lr_;
     // Active occ orbital coefficients of A
     std::shared_ptr<Matrix> Cocc_A_;
     // Active vir orbital coefficients of A
@@ -242,8 +259,11 @@ class CPHF_FISAPT {
 
     // Perturbation applied to B
     std::shared_ptr<Matrix> w_B_;
+    std::shared_ptr<Matrix> w_B_lr_;
     // Response of B
     std::shared_ptr<Matrix> x_B_;
+    std::shared_ptr<Matrix> x_B_lr_;
+
     // Active occ orbital coefficients of B
     std::shared_ptr<Matrix> Cocc_B_;
     // Active vir orbital coefficients of B

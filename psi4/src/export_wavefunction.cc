@@ -469,7 +469,7 @@ void export_wavefunction(py::module& m) {
         .def("dHF", &fisapt::FISAPT::dHF, "SAPT0 delta HF.")
         .def("elst", &fisapt::FISAPT::elst, "SAPT0 electrostatics.")
         .def("exch", &fisapt::FISAPT::exch, "SAPT0 exchange.")
-        .def("ind", &fisapt::FISAPT::ind, "SAPT0 induction.")
+        .def("ind_n_fdisp", &fisapt::FISAPT::ind_n_fdisp, "SAPT0 induction.")
         .def("disp", &fisapt::FISAPT::disp, "Computes the MP2-based DispE20 and Exch-DispE20 energy.")
         .def("sinf_disp", &fisapt::FISAPT::sinf_disp,
              "Computes the MP2-based DispE20 and Exch-DispE20 energy without S^2.")
@@ -477,7 +477,7 @@ void export_wavefunction(py::module& m) {
         .def("felst", &fisapt::FISAPT::felst, "F-SAPT0 electrostatics.")
         .def("fexch", &fisapt::FISAPT::fexch, "F-SAPT0 exchange.")
         .def("find", &fisapt::FISAPT::find, "F-SAPT0 induction.")
-        .def("fdisp", &fisapt::FISAPT::fdisp, "F-SAPT0 dispersion.")
+   //     .def("fdisp", &fisapt::FISAPT::fdisp, "F-SAPT0 dispersion.")
         .def("raw_plot", &fisapt::FISAPT::raw_plot, "Plot some analysis files.")
         .def("print_trailer", &fisapt::FISAPT::print_trailer, "Print SAPT results.");
 
