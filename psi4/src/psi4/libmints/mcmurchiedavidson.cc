@@ -428,7 +428,7 @@ void fill_R_matrix_erfgau(int maxam, double p, double omega, const Point& PC, st
     std::fill(R.begin(), R.begin() + dim1 * dim2, 0.0);
  
     //R[0] = pow(p / (p + onethird * omega * omega) , 1.5) * pow(4.0 * q / (p * p), 0.75) * exp(-u * RAB * RAB) * exp(-onethird * p * omega * omega * RPC * RPC / (p + onethird * omega * omega));
-    R[0] = pow(p / (p + onethird * omega * omega) , 1.5) * pow(4.0 * q / (p * p), 0.75) * exp(-onethird * p * omega * omega * RPC * RPC / (p + onethird * omega * omega));
+    R[0] = pow(p / (p + onethird * omega * omega) , 1.5) * pow(M_PI / p, 1.5) * exp(-onethird * p * omega * omega * RPC * RPC / (p + onethird * omega * omega));
 
     // t + u + v <= N
     // t = 0, u = 0

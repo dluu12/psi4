@@ -711,6 +711,7 @@ void MultipolePotentialInt_erfgau::compute_pair_erfgau(double omega, const libin
             Point AB{A[0] - B[0], A[1] - B[1], A[2] - B[2]};
             //double prefac = 2.0 * M_PI * ca * cb / p;
             double prefac = ca * cb;
+            outfile->Printf("a b ca cb %12.6f %12.6f %12.6f %12.6f \n",a,b,ca,cb);
 
             fill_E_matrix(am1, am2, P, A, B, a, b, Ex, Ey, Ez);
 
@@ -729,7 +730,7 @@ void MultipolePotentialInt_erfgau::compute_pair_erfgau(double omega, const libin
 
                 outfile->Printf("omega multipolepot. : %12.8f",omega);
                 fill_R_matrix_erfgau(r_am, p, omega, PC, R, u, AB, q);
-                outfile->Printf("R[0] %12.8f",R[0]);
+                outfile->Printf(" R[0] %12.8f\n",R[0]);
     
     
                 int der_count = 0;
@@ -768,16 +769,13 @@ void MultipolePotentialInt_erfgau::compute_pair_erfgau(double omega, const libin
                                             // eq 9.9.32 (using eq 9.9.27)
                                             val += Ex_p[t] * Ey_p[u] * Ez_p[v] *
                                                    R[address_3d(t + ex, u + ey, v + ez, rdim1, rdim1)];
-//                                            outfile->Printf("address R val %d %12.6f %12.6f \n",address_3d(t + ex, u + ey, v + ez, rdim1, rdim1),R[address_3d(t + ex, u + ey, v + ez, rdim1, rdim1)],val); 
                                         }
                                     }
                                 }
                             //  buffer_[ao12 + size * der_count] += sign_prefac * val * -Z;
                                 buffer_[ao12 + size * der_count] += sign_prefac * val;
+                                //outfile->Printf("buffer_[ao12 + size * der_count]   %12.6f %12.6f %12.6f\n", buffer_[ao12 + size * der_count], sign_prefac, val);
                                 ++ao12;
-                             //   if (!(Z == 0)) {
-                                    outfile->Printf("buffer_[ao12 + size * der_count]   %12.6f\n", buffer_[ao12 + size * der_count]);
-                             //   }
                             }
                         }
                         der_count++;
