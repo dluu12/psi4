@@ -134,6 +134,28 @@ void DiskJK::preiterations(double omega, double eta) {
     mints.reset();
 }
 
+
+void DiskJK::preiterations(double omega, double eta, double eta1) {
+    auto mints = std::make_shared<MintsHelper>(primary_, options_, 0);
+    mints->integrals();
+    if (do_wK_) mints->integrals_erf(omega_);
+
+    std::shared_ptr<SOBasisSet> bas = mints->sobasisset();
+
+    so2symblk_ = new int[primary_->nbf()]; // lgtm [cpp/resource-not-released-in-destructor]
+    so2index_ = new int[primary_->nbf()]; // lgtm [cpp/resource-not-released-in-destructor]
+    size_t so_count = 0;
+    size_t offset = 0;
+    for (int h = 0; h < bas->nirrep(); ++h) {
+        for (int i = 0; i < bas->dimension()[h]; ++i) {
+            so2symblk_[so_count] = h;
+            so2index_[so_count] = so_count - offset;
+            ++so_count;
+        }
+        offset += bas->dimension()[h];
+    }
+    mints.reset();
+}
 void DiskJK::compute_JK() {
 
     // zero out J, K, and wK matrices
@@ -633,6 +655,10 @@ void DiskJK::compute_JK(double eta) {
 void DiskJK::compute_JK(double omega, double eta) {
     throw PSIEXCEPTION("This method is not implemented");
 }
+void DiskJK::compute_JK(double omega, double eta, double eta1) {
+    throw PSIEXCEPTION("This method is not implemented");
+}
+
 void DiskJK::postiterations() {
     delete[] so2symblk_;
     delete[] so2index_;
@@ -645,4 +671,9 @@ void DiskJK::postiterations(double omega, double eta) {
     delete[] so2symblk_;
     delete[] so2index_;
 }
+void DiskJK::postiterations(double omega, double eta, double eta1) {
+    delete[] so2symblk_;
+    delete[] so2index_;
+}
+
 }  // namespace psi

@@ -269,6 +269,7 @@ class PSI_API JK {
     /// Omega, defaults to 0.0
     double omega_;
     double eta_;
+    double eta1_;
     /// omega alpha, defaults to 1.0
     double omega_alpha_;
 
@@ -337,6 +338,7 @@ class PSI_API JK {
 
     void common_init(double eta);
     void common_init(double omega, double eta);
+    void common_init(double omega, double eta, double eta1);
 
 
     // => Required Algorithm-Specific Methods <= //
@@ -345,15 +347,18 @@ class PSI_API JK {
     virtual void preiterations() = 0;
     virtual void preiterations(double eta) = 0;
     virtual void preiterations(double omega, double eta) = 0;
+    virtual void preiterations(double omega, double eta, double eta1) = 0;
     /// Compute J/K for current C/D
     virtual void compute_JK() = 0;
 
     virtual void compute_JK(double eta) = 0;
     virtual void compute_JK(double omega, double eta) = 0;
+    virtual void compute_JK(double omega, double eta, double eta1) = 0;
     /// Delete integrals, files, etc
     virtual void postiterations() = 0;
     virtual void postiterations(double eta) = 0;
     virtual void postiterations(double omega, double eta) = 0;
+    virtual void postiterations(double omega, double eta, double eta1) = 0;
     // => Helper Routines <= //
 
     /// Memory (doubles) used to hold J/K/wK/C/D and ao versions, at current moment
@@ -401,12 +406,16 @@ class PSI_API JK {
                                         Options& options, std::string jk_type);
     static std::shared_ptr<JK> build_JK(double omega, double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
                                         Options& options, std::string jk_type);
+    static std::shared_ptr<JK> build_JK(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
+                                        Options& options, std::string jk_type);
     static std::shared_ptr<JK> build_JK(std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
                                         Options& options, bool do_wK, size_t doubles);
 
     static std::shared_ptr<JK> build_JK(double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
                                         Options& options, bool do_wK, size_t doubles);
     static std::shared_ptr<JK> build_JK(double omega, double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
+                                        Options& options, bool do_wK, size_t doubles);
+    static std::shared_ptr<JK> build_JK(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
                                         Options& options, bool do_wK, size_t doubles);
     /// Do we need to backtransform to C1 under the hood?
     virtual bool C1() const = 0;
@@ -492,6 +501,9 @@ class PSI_API JK {
     void set_eta(double eta) { eta_ = eta; }
     double get_eta() { return eta_; }
 
+    void set_eta1(double eta1) { eta1_ = eta1; }
+    double get_eta1() { return eta1_; }
+
     /**
     * Set the alpha value for w exchange: weight for HF Term                
     * @param omega_alpha HF-Exchange weight
@@ -524,6 +536,7 @@ class PSI_API JK {
     void initialize();
     void initialize(double eta);
     void initialize(double omega, double eta);
+    void initialize(double omega, double eta, double eta1);
     /**
      * Compute D/J/K for the current C
      * Update values in your reference to
@@ -535,6 +548,7 @@ class PSI_API JK {
 
     void compute(double eta);
     void compute(double omega, double eta);
+    void compute(double omega, double eta, double eta1);
     /**
      * Method to clear off memory without
      * totally destroying the object. The
@@ -544,6 +558,7 @@ class PSI_API JK {
     void finalize();
     void finalize(double eta);
     void finalize(double omega,double eta);
+    void finalize(double omega,double eta, double eta1);
     /**
      * Virtual method to provide (ia|ia) integrals for
      * SO-basis C_mi and C_na matrices in O(N^4) or less
@@ -647,16 +662,21 @@ class PSI_API DiskJK : public JK {
     void preiterations() override;
     void preiterations(double eta) override;
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
 
     /// Compute J/K for current C/D
     void compute_JK() override;
     void compute_JK(double eta) override;
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
 
     /// Delete integrals, files, etc
     void postiterations() override;
     void postiterations(double eta) override;
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
+
+
     /// Common initialization
     void common_init();
 
@@ -715,16 +735,19 @@ class PSI_API PKJK : public JK {
     void preiterations() override;
     void preiterations(double eta) override;
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
    
 // Compute J/K for current C/D
     void compute_JK() override;
     void compute_JK(double eta) override;
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
 
     /// Delete integrals, files, etc
     void postiterations() override;
     void postiterations(double eta) override;
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
     /// Common initialization
     void common_init();
 
@@ -823,10 +846,13 @@ class PSI_API DirectJK : public JK {
 
     /// Setup integrals, files, etc
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
     /// Compute J/K for current C/D
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
     /// Delete integrals, files, etc
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
     /// Set up Incfock variables per iteration
     void incfock_setup();
     /// Post-iteration Incfock processing
@@ -952,6 +978,7 @@ class PSI_API DiskDFJK : public JK {
 
     double eta_;
     double omega_;
+    double eta1_;
     // => DF-Specific stuff <= //
 
     std::string name() override { return "DiskDFJK"; }
@@ -1047,16 +1074,23 @@ class PSI_API DiskDFJK : public JK {
 
     /// Setup integrals, files, etc
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
     /// Compute J/K for current C/D
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
     /// Delete integrals, files, etc
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
 
     /// Common initialization
     void common_init(double omega, double eta);
+    void common_init(double omega, double eta, double eta1);
 
     void initialize_temps(double omega, double eta);
+    void initialize_temps(double omega, double eta, double eta1);
+
     void free_temps(double omega, double eta);
+    void free_temps(double omega, double eta, double eta1);
 
     // => J <= //
     virtual void initialize_JK_core();
@@ -1082,6 +1116,13 @@ class PSI_API DiskDFJK : public JK {
     virtual void block_J(double omega, double eta, double** Qmnp, int naux);
     virtual void block_K(double omega, double eta, double** Qmnp, int naux);
 
+    virtual void initialize_JK_core(double omega, double eta, double eta1);
+    virtual void initialize_JK_disk(double omega, double eta, double eta1);
+    virtual void manage_JK_core(double omega, double eta, double eta1);
+    virtual void manage_JK_disk(double omega, double eta, double eta1);
+    virtual void block_J(double omega, double eta, double eta1, double** Qmnp, int naux);
+    virtual void block_K(double omega, double eta, double eta1, double** Qmnp, int naux);
+
     // => wK <= //
     virtual void initialize_wK_core();
     virtual void initialize_wK_disk();
@@ -1105,6 +1146,8 @@ class PSI_API DiskDFJK : public JK {
 
     DiskDFJK(double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options_);
     DiskDFJK(double omega, double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options_);
+    DiskDFJK(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options_);
+
     /// Destructor
     ~DiskDFJK() override;
 
@@ -1248,19 +1291,23 @@ class PSI_API MemDFJK : public JK {
     void preiterations() override;
     void preiterations(double eta) override;
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
     /// Compute J/K for current C/D
     void compute_JK() override;
     void compute_JK(double eta) override;
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
     /// Delete integrals, files, etc
     void postiterations() override;
     void postiterations(double eta) override;
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
     /// Common initialization
     void common_init();
 
     void common_init(double eta);
     void common_init(double omega, double eta);
+    void common_init(double omega, double eta, double eta1);
    public:
     // => Constructors < = //
 
@@ -1272,6 +1319,7 @@ class PSI_API MemDFJK : public JK {
 
     MemDFJK(double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options);
     MemDFJK(double omega, double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options);
+    MemDFJK(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary, Options& options);
 
     /// Destructor
     ~MemDFJK() override;
@@ -1396,15 +1444,18 @@ class PSI_API CompositeJK : public JK {
     void preiterations() override;
     void preiterations(double eta) override;
     void preiterations(double omega, double eta) override;
+    void preiterations(double omega, double eta, double eta1) override;
 
     /// Compute J/K for current C/D
     void compute_JK() override;
     void compute_JK(double eta) override;
     void compute_JK(double omega, double eta) override;
+    void compute_JK(double omega, double eta, double eta1) override;
     /// Delete integrals, files, etc
     void postiterations() override;
     void postiterations(double eta) override;
     void postiterations(double omega, double eta) override;
+    void postiterations(double omega, double eta, double eta1) override;
     /// Set up Incfock variables per iteration
     void incfock_setup();
     /// Post-iteration Incfock processing

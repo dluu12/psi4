@@ -772,8 +772,8 @@ void MultipolePotentialInt_erfgau::compute_pair_erfgau(double omega, const libin
                                         }
                                     }
                                 }
-                            //  buffer_[ao12 + size * der_count] += sign_prefac * val * -Z;
-                                buffer_[ao12 + size * der_count] += sign_prefac * val;
+                              buffer_[ao12 + size * der_count] += sign_prefac * val * -Z;
+                         //       buffer_[ao12 + size * der_count] += sign_prefac * val;
                                 //outfile->Printf("buffer_[ao12 + size * der_count]   %12.6f %12.6f %12.6f\n", buffer_[ao12 + size * der_count], sign_prefac, val);
                                 ++ao12;
                             }

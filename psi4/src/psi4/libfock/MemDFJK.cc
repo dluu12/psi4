@@ -72,13 +72,22 @@ MemDFJK::MemDFJK(double omega, double eta, std::shared_ptr<BasisSet> primary, st
     omega_ = omega;
     common_init(omega_, eta_);
 }
+MemDFJK::MemDFJK(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> auxiliary,
+    Options& options) : JK(primary), auxiliary_(auxiliary), options_(options) {
+
+    eta_ = 0.0;
+    eta1_ = 0.0;
+    omega_ = omega;
+    common_init(omega_, eta_);
+}
+
 MemDFJK::~MemDFJK() {}
 
 void MemDFJK::common_init() { dfh_ = std::make_shared<DFHelper>(primary_, auxiliary_); }
 
 void MemDFJK::common_init(double eta) { eta_ = eta; dfh_ = std::make_shared<DFHelper>(eta_, primary_, auxiliary_); }
 void MemDFJK::common_init(double omega, double eta) { omega_ = omega; eta_ = 0.0; dfh_ = std::make_shared<DFHelper>(omega_, eta_, primary_, auxiliary_); }
-
+void MemDFJK::common_init(double omega, double eta, double eta1) { omega_ = omega; eta_ = 0.0; eta1_ = 0.0; dfh_ = std::make_shared<DFHelper>(omega_, eta_, eta1_, primary_, auxiliary_); }
 size_t MemDFJK::memory_estimate() {
     dfh_->set_nthreads(omp_nthread_);
     dfh_->set_schwarz_cutoff(cutoff_);
@@ -172,6 +181,38 @@ void MemDFJK::preiterations(double omega, double eta) {
 
     dfh_->initialize(omega_, eta_);
 }
+
+void MemDFJK::preiterations(double omega, double eta, double eta1) {
+    eta_ = 0.0;
+    eta1_ = 0.0;
+    omega_ = omega;
+    // Initialize calls your derived class's preiterations member
+    // knobs are set and state variables assigned
+
+    // use previously set state variables to dfh instance
+    dfh_->set_nthreads(omp_nthread_);
+    dfh_->set_schwarz_cutoff(cutoff_);
+    dfh_->set_method("STORE");
+    dfh_->set_fitting_condition(condition_);
+    dfh_->set_memory(memory_ - memory_overhead());
+    dfh_->set_do_wK(do_wK_);
+    dfh_->set_omega(omega_);
+
+    dfh_->set_eta(eta_);
+    if (do_wK_) { 
+        dfh_->set_wcombine(wcombine_); 
+    } else {
+        dfh_->set_wcombine(false);
+        wcombine_ = false;
+    }
+    dfh_->set_omega_alpha(omega_alpha_);
+    dfh_->set_omega_beta(omega_beta_);
+
+    // we need to prepare the AOs here, and that's it.
+    // DFHelper takes care of all the housekeeping
+
+    dfh_->initialize(omega_, eta_, eta1_);
+}
 void MemDFJK::compute_JK() {
 
     // zero out J, K, and wK matrices
@@ -219,9 +260,25 @@ void MemDFJK::compute_JK(double omega, double eta) {
         }
     }
 }
+void MemDFJK::compute_JK(double omega, double eta, double eta1) {
+    // zero out J, K, and wK matrices
+    zero();
+
+    dfh_->build_JK(C_left_ao_, C_right_ao_, D_ao_, J_ao_, K_ao_, wK_ao_, max_nocc(), do_J_, do_K_, do_wK_,
+                   lr_symmetric_);
+    if (lr_symmetric_) {
+        if (do_wK_) {
+            for (size_t N = 0; N < wK_ao_.size(); N++) {
+                wK_ao_[N]->hermitivitize();
+            }
+        }
+    }
+}
+
 void MemDFJK::postiterations() {}
 void MemDFJK::postiterations(double eta) {}
 void MemDFJK::postiterations(double omega, double eta) {}
+void MemDFJK::postiterations(double omega, double eta, double eta1) {}
 
 void MemDFJK::print_header() const {
     // dfh_->print_header();

@@ -53,6 +53,8 @@ class PSI_API DFHelper {
     DFHelper(std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> aux);
     DFHelper(double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> aux);
     DFHelper(double omega, double eta, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> aux);
+    DFHelper(double omega, double eta, double eta1, std::shared_ptr<BasisSet> primary, std::shared_ptr<BasisSet> aux);
+ 
     ~DFHelper();
 
     ///
@@ -188,6 +190,9 @@ class PSI_API DFHelper {
     void set_eta(double eta) { eta_ = eta; }
     double get_eta() { return eta_; }
 
+    void set_eta1(double eta1) { eta1_ = eta1; }
+    double get_eta1() { return eta1_; }
+
     ///
     /// sets the coefficient for (pq|rs) integrals
     /// @param omega double indicating coefficient for eri
@@ -214,10 +219,13 @@ class PSI_API DFHelper {
 
     void initialize(double eta);
     void initialize(double omega, double eta);
+    void initialize(double omega, double eta, double eta1);
+
     /// Prepare screening and indexing metadata used for Schwarz screening.
     void prepare_sparsity();
     void prepare_sparsity(double eta);
     void prepare_sparsity(double omega, double eta);
+    void prepare_sparsity(double omega, double eta, double eta1);
 
 
     /// print tons of useful info
@@ -243,6 +251,8 @@ class PSI_API DFHelper {
     void transform();
     void transform(double eta);
     void transform(double omega, double eta);
+    void transform(double omega, double eta, double eta1);
+
     // => Tensor IO <=
     // many ways to access the 3-index tensors.
 
@@ -378,6 +388,7 @@ class PSI_API DFHelper {
     double omega_beta_;
 
     double eta_;
+    double eta1_;
 
     bool debug_ = true;
     // Can we early-exit prepare_sparsity?
@@ -443,6 +454,20 @@ class PSI_API DFHelper {
                                         std::vector<std::shared_ptr<TwoBodyAOInt>> eri,
                                         std::vector<std::shared_ptr<TwoBodyAOInt>> weri);
 
+    void prepare_AO(double omega, double eta, double eta1);
+    void prepare_AO_core(double omega, double eta, double eta1);
+    void compute_dense_Qpq_blocking_Q(double omega, double eta, double eta1, const size_t start, const size_t stop, double* Mp,
+                                      std::vector<std::shared_ptr<TwoBodyAOInt>> eri);
+    void compute_sparse_pQq_blocking_Q(double omega, double eta, double eta1, const size_t start, const size_t stop, double* Mp,
+                                       std::vector<std::shared_ptr<TwoBodyAOInt>> eri);
+    void compute_sparse_pQq_blocking_p(double omega, double eta, double eta1, const size_t start, const size_t stop, double* Mp,
+                                       std::vector<std::shared_ptr<TwoBodyAOInt>> eri);
+    void compute_sparse_pQq_blocking_p_symm(double omega, double eta, double eta1, const size_t start, const size_t stop, double* Mp,
+                                            std::vector<std::shared_ptr<TwoBodyAOInt>> eri);
+    void compute_sparse_pQq_blocking_p_symm_abw(double omega, double eta, double eta1, const size_t start, const size_t stop, double* just_Mp, double* param_Mp,
+                                        std::vector<std::shared_ptr<TwoBodyAOInt>> eri,
+                                        std::vector<std::shared_ptr<TwoBodyAOInt>> weri);
+
 
     void contract_metric_AO_core_symm(double* Qpq, double* Ppq, double* metp, size_t begin, size_t end);
     void grab_AO(const size_t start, const size_t stop, double* Mp);
@@ -456,6 +481,9 @@ class PSI_API DFHelper {
 
     void prepare_AO_wK_core(double omega, double eta);
     void prepare_AO_wK(double omega, double eta);
+    void prepare_AO_wK_core(double omega, double eta, double eta1);
+    void prepare_AO_wK(double omega, double eta, double eta1);
+
     void copy_upper_lower_wAO_core_symm(double* Qpq, double* Ppq, size_t begin, size_t end);
 
     // first integral transforms
@@ -519,19 +547,29 @@ class PSI_API DFHelper {
     void prepare_metric();
     void prepare_metric(double eta);
     void prepare_metric(double omega, double eta);
+    void prepare_metric(double omega, double eta, double eta1);
+
     // Create J and cache it in metrics_.
     void prepare_metric_core();
     void prepare_metric_core(double eta);
     void prepare_metric_core(double omega, double eta);
+    void prepare_metric_core(double omega, double eta, double eta1);
+
     double* metric_prep_core(double m_pow);
     double* metric_prep_core(double m_pow, double eta);
     double* metric_prep_core(double m_pow, double omega, double eta);
+    double* metric_prep_core(double m_pow, double omega, double eta, double eta1);
+
     std::string return_metfile(double m_pow);
     std::string return_metfile_lr(double m_pow, double eta);
     std::string return_metfile_lr(double m_pow, double omega, double eta);
+    std::string return_metfile_lr(double m_pow, double omega, double eta, double eta1);
+
     std::string compute_metric(double m_pow);
     std::string compute_metric_lr(double m_pow, double eta);
     std::string compute_metric_lr(double m_pow, double omega, double eta);
+    std::string compute_metric_lr(double m_pow, double omega, double eta, double eta1);
+
     double* metric_inverse_prep_core();
 
     // => metric operations <=

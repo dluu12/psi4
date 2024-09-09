@@ -56,6 +56,8 @@ class PSI_API FittingMetric {
     double omega_;
 
     double eta_;
+    double eta1_;
+
 
     /// The fitting metric or symmetric inverse
     SharedMatrix metric_;
@@ -79,6 +81,8 @@ class PSI_API FittingMetric {
 
     /// DF Fitting Metric
     FittingMetric(std::shared_ptr<BasisSet> aux, double omega, bool force_C1 = false);
+    FittingMetric(std::shared_ptr<BasisSet> aux, double omega, double eta, bool force_C1 = false);
+
     /// Poisson Fitting Metric
     FittingMetric(std::shared_ptr<BasisSet> aux, std::shared_ptr<BasisSet> pois, bool force_C1 = false);
 
@@ -107,25 +111,36 @@ class PSI_API FittingMetric {
     /// Build the raw fitting metric (sets up indices to canonical)
     void form_fitting_metric();
     void form_fitting_metric(double eta);
-
+    void form_fitting_metric(double omega, double eta);
     /// Build the Cholesky half inverse metric (calls form_fitting_metric)
     void form_cholesky_inverse();
     void form_cholesky_inverse(double eta);
+    void form_cholesky_inverse(double omega, double eta);
+
+
     /// Build the QR half inverse metric (calls form_fitting_metric)
     void form_QR_inverse(double tol = 1.0E-10);
     void form_QR_inverse(double eta, double tol);
+    void form_QR_inverse(double omega, double eta, double tol);
     /// Build the eigendecomposed half inverse metric (calls form_fitting_metric)
     void form_eig_inverse(double tol = 1.0E-10);
     void form_eig_inverse(double eta, double tol);
+    void form_eig_inverse(double omega, double eta, double tol);
+
     /// Build the full inverse metric. NOT RECOMMENDED: Numerical stability (calls form_fitting_metric)
     void form_full_inverse();
     void form_full_inverse(double eta);
+    void form_full_inverse(double omega, double eta);
     /// Build the full inverse metric.
     void form_full_eig_inverse(double tol = 1.0E-10);
     void form_full_eig_inverse(double eta, double tol);
+    void form_full_eig_inverse(double omega, double eta, double tol);
+
     /// Build the full metric's Cholesky factor. RECOMMENDED: Numerical stability
     void form_cholesky_factor();
     void form_cholesky_factor(double eta);
+    void form_cholesky_factor(double omega, double eta);
+
 };
 
 class PSI_API DFTensor {

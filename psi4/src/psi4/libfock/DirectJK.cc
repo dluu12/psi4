@@ -154,6 +154,17 @@ void DirectJK::preiterations(double omega, double eta) {
 #endif
 }
 
+void DirectJK::preiterations(double omega, double eta, double eta1) {
+
+#ifdef USING_BrianQC
+    if (brianEnable) {
+        double threshold = cutoff_ * (brianCPHFFlag ? 1e-3 : 1e-0); // CPHF needs higher precision
+        brianCOMSetPrecisionThresholds(&brianCookie, &threshold);
+        checkBrian();
+    }
+#endif
+}
+
 void DirectJK::incfock_setup() {
     if (do_incfock_iter_) {
         size_t njk = D_ao_.size();
@@ -417,9 +428,15 @@ void DirectJK::compute_JK(double omega, double eta) {
     throw PSIEXCEPTION("This method is not implemented.");
 }
 
+void DirectJK::compute_JK(double omega, double eta, double eta1) {
+    throw PSIEXCEPTION("This method is not implemented.");
+}
+
 void DirectJK::postiterations() {}
 void DirectJK::postiterations(double eta) {}
 void DirectJK::postiterations(double omega, double eta) {}
+void DirectJK::postiterations(double omega, double eta, double eta1) {}
+
 void DirectJK::build_JK_matrices(std::vector<std::shared_ptr<TwoBodyAOInt>>& ints, const std::vector<SharedMatrix>& D,
                         std::vector<SharedMatrix>& J, std::vector<SharedMatrix>& K) {
 

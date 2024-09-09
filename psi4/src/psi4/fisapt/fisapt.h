@@ -64,6 +64,7 @@ class FISAPT {
     std::shared_ptr<JK> jk_;
 
     std::shared_ptr<JK> jklr_;
+    std::shared_ptr<JK> jklrerf_;
     /// Map of scalars
     std::map<std::string, double> scalars_;
     /// Map of vectors
@@ -82,7 +83,7 @@ class FISAPT {
     // DFHelper object
     std::shared_ptr<DFHelper> dfh_;
     std::shared_ptr<DFHelper> dfh_lr;   
-
+    std::shared_ptr<DFHelper> dfherf_lr;
     /// Helper to drop a matrix to filepath/A->name().dat
     /// Helper to drop a vector to filepath/A->name().dat
     //  drop(<Matrix> or <Vector>, filepath) moved py-side
