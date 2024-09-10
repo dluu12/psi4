@@ -177,7 +177,11 @@ void DiskDFJK::common_init(double omega, double eta, double eta1) {
         std::make_shared<IntegralFactory>(auxiliary_, zero, primary_, primary_);
 
 
-    auto tmperi = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega_, 1.0));
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega_, 1.0);
+    expcoeff.push_back(exco);
+
+    auto tmperi = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
     n_function_pairs_ = tmperi->function_pairs().size();
 
     bool switch_engine=true;
@@ -794,11 +798,16 @@ void DiskDFJK::preiterations(double omega, double eta, double eta1) {
     eta_ = 0.0;
     eta1_ = 0.0;
     omega_ = omega;
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega_, 1.0);
+    expcoeff.push_back(exco);
+
     eri_.clear();
     std::shared_ptr<BasisSet> zero = BasisSet::zero_ao_basis_set();
     std::shared_ptr<IntegralFactory> rifactory =
         std::make_shared<IntegralFactory>(auxiliary_, zero, primary_, primary_);
-    eri_.emplace_back(rifactory->f12(omega_, 1.0));
+    eri_.emplace_back(rifactory->f12(expcoeff));
     for (int Q = 1; Q < df_ints_num_threads_; Q++) {
         eri_.emplace_back(eri_.front()->clone());
     }

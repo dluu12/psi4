@@ -630,9 +630,14 @@ void FittingMetric::form_fitting_metric(double omega, double eta) {
     IntegralFactory rifactory_J(aux_, zero, aux_, zero);
     std::vector<const double*> Jbuffer(nthread);  
     std::vector<std::shared_ptr<TwoBodyAOInt>> Jint(nthread);
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega_, 1.0);
+    expcoeff.push_back(exco);
+
     for (int Q = 0; Q < nthread; Q++) {
         if (omega_ > 0.0) {
-            Jint[Q] = std::shared_ptr<TwoBodyAOInt>(rifactory_J.f12(omega_, 1.0));
+            Jint[Q] = std::shared_ptr<TwoBodyAOInt>(rifactory_J.f12(expcoeff));
         } else {
             Jint[Q] = std::shared_ptr<TwoBodyAOInt>(rifactory_J.eri());
         }

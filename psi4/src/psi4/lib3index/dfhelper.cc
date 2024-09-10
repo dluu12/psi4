@@ -940,8 +940,12 @@ void DFHelper::prepare_sparsity(double omega, double eta, double eta1) {
     size_t screen_threads = (nthreads_ == 1 ? 1 : 2);  // TODO: Replace screen_threads with nthreads_?
     auto rifactory = std::make_shared<IntegralFactory>(primary_, primary_, primary_, primary_);
 
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
     std::vector<std::shared_ptr<TwoBodyAOInt>> eri(screen_threads);
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega, 1.0));
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
 
 #pragma omp parallel num_threads(screen_threads) if (nbf_ > 1000)
     {
@@ -1276,10 +1280,15 @@ void DFHelper::prepare_AO(double omega, double eta) {
 void DFHelper::prepare_AO(double omega, double eta, double eta1) {
     // prepare eris
     omega_ = omega;
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
     std::shared_ptr<BasisSet> zero = BasisSet::zero_ao_basis_set();
     auto rifactory = std::make_shared<IntegralFactory>(aux_, zero, primary_, primary_);
     std::vector<std::shared_ptr<TwoBodyAOInt>> eri(nthreads_);
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega, 1.0));
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
 
     eta_ = 0.0;
     eta1_ = 0.0;
@@ -1426,10 +1435,15 @@ void DFHelper::prepare_AO_wK(double omega, double eta) {
 void DFHelper::prepare_AO_wK(double omega, double eta, double eta1) {
     // prepare eris
     omega_ = omega;
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
     std::shared_ptr<BasisSet> zero = BasisSet::zero_ao_basis_set();
     auto rifactory = std::make_shared<IntegralFactory>(aux_, zero, primary_, primary_);
     std::vector<std::shared_ptr<TwoBodyAOInt>> eri(nthreads_);
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega_, 1.0));
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
 
     eta_ = 0.0;
     eta1_ = 0.0;
@@ -1704,10 +1718,15 @@ void DFHelper::prepare_AO_core(double omega, double eta, double eta1) {
     outfile->Printf(" dfhelper prepare_AO_core begin\n");   
     // get each thread an eri object
     omega_ = omega;
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
     std::shared_ptr<BasisSet> zero = BasisSet::zero_ao_basis_set();
     auto rifactory = std::make_shared<IntegralFactory>(aux_, zero, primary_, primary_);
     std::vector<std::shared_ptr<TwoBodyAOInt>> eri(nthreads_);
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega_, 1.0));
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
 
     eta_ = 0.0;
     eta1_ = 0.0;
@@ -2137,7 +2156,12 @@ void DFHelper::prepare_AO_wK_core(double omega, double eta, double eta1) {
 
     eta_ =0.0;
     eta1_ = 0.0;
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega_, 1.0));
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
     weri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->erf_eri(omega_));
 
 
@@ -5645,7 +5669,12 @@ void DFHelper::transform(double omega, double eta, double eta1) {
     std::shared_ptr<BasisSet> zero = BasisSet::zero_ao_basis_set();
     auto rifactory = std::make_shared<IntegralFactory>(aux_, zero, primary_, primary_);
     std::vector<std::shared_ptr<TwoBodyAOInt>> eri(nthread);
-    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(omega_, 1.0));
+
+    std::vector<std::pair<double, double> > expcoeff;
+    std::pair<double, double> exco(omega, 1.0);
+    expcoeff.push_back(exco);
+
+    eri[0] = std::shared_ptr<TwoBodyAOInt>(rifactory->f12(expcoeff));
 
 
 #pragma omp parallel num_threads(nthreads_)
