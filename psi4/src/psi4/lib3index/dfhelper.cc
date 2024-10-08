@@ -4025,7 +4025,7 @@ void DFHelper::prepare_metric_core(double omega, double eta) {
 void DFHelper::prepare_metric_core(double omega, double eta, double eta1) {
     timer_on("DFH: metric construction");
     FittingMetric J(aux_, omega, eta, true);
-    J.form_fitting_metric();
+    J.form_fitting_metric(omega, eta);
     metricslr_[1.0] = J.get_metric();
     timer_off("DFH: metric construction");
 }
@@ -4169,7 +4169,7 @@ void DFHelper::prepare_metric(double omega, double eta) {
 void DFHelper::prepare_metric(double omega, double eta, double eta1) {
     // construct metric
     FittingMetric J(aux_, omega, eta, true);
-    J.form_fitting_metric();
+    J.form_fitting_metric(omega, eta);
     auto metric = J.get_metric();
     auto Mp = metric->pointer()[0];
 

@@ -1194,17 +1194,18 @@ void FISAPT::nuclear() {
         outfile->Printf("  nuclear integral test 4.5  \n\n");
         matrices_["VAerf_lr"]->print();
 
+        double coeff = 2 * options_.get_double("RSEP_OMEGA") / pow(M_PI, 0.5);
+
         Vintgau_lr->set_charge_field(Zxyz); 
         outfile->Printf("  nuclear integral test 4 \n\n");
         matrices_["VAgau_lr"] = std::make_shared<Matrix>("VAgau_lr", nm, nm);
         Vintgau_lr->compute_erfgau(options_.get_double("RSEP_OMEGA"), matrices_["VAgau_lr"]);
         outfile->Printf("  nuclear integral test 4.5  \n\n");
+        matrices_["VAgau_lr"]->scale(coeff); 
         matrices_["VAgau_lr"]->print();
 
-        double coeff = 2 * options_.get_double("RSEP_OMEGA") / pow(M_PI, 0.5);
         matrices_["VA_lr"] = matrices_["VAerf_lr"]->clone();
         matrices_["VA_lr"]->subtract(matrices_["VAgau_lr"]);
-        matrices_["VA_lr"]->scale(coeff); 
 
         outfile->Printf("  nuclear integral test5 \n\n");
 
@@ -1229,11 +1230,11 @@ void FISAPT::nuclear() {
         matrices_["VBgau_lr"] = std::make_shared<Matrix>("VBgau_lr", nm, nm);
         Vintgau_lr->compute_erfgau(options_.get_double("RSEP_OMEGA"), matrices_["VBgau_lr"]);
         outfile->Printf("  nuclear integral test 4.5  \n\n");
+        matrices_["VBgau_lr"]->scale(coeff);
         matrices_["VBgau_lr"]->print();
 
         matrices_["VB_lr"] = matrices_["VBerf_lr"]->clone();
         matrices_["VB_lr"]->subtract(matrices_["VBgau_lr"]);
-        matrices_["VB_lr"]->scale(coeff);
      
         outfile->Printf("  nuclear integral test5 \n\n");
 
@@ -1258,11 +1259,11 @@ void FISAPT::nuclear() {
         matrices_["VCgau_lr"] = std::make_shared<Matrix>("VCgau_lr", nm, nm);
         Vintgau_lr->compute_erfgau(options_.get_double("RSEP_OMEGA"), matrices_["VCgau_lr"]);
         outfile->Printf("  nuclear integral test 4.5  \n\n");
+        matrices_["VCgau_lr"]->scale(coeff);
         matrices_["VCgau_lr"]->print();
 
         matrices_["VC_lr"] = matrices_["VCerf_lr"]->clone();
         matrices_["VC_lr"]->subtract(matrices_["VCgau_lr"]);
-        matrices_["VC_lr"]->scale(coeff);
 
 
         outfile->Printf("  nuclear integral test5 \n\n");
@@ -2246,15 +2247,16 @@ void FISAPT::unify() {
             matrices_["K_A_lr"] = matrices_["K_A_lrerf"]->clone();
             matrices_["K_B_lr"] = matrices_["K_B_lrerf"]->clone();
 
+            J_lr[0]->scale(coeff);
+            J_lr[1]->scale(coeff);
+            K_lr[0]->scale(coeff);
+            K_lr[1]->scale(coeff);
+
             matrices_["J_A_lr"]->subtract(J_lr[0]);
             matrices_["J_B_lr"]->subtract(J_lr[1]);
             matrices_["K_A_lr"]->subtract(K_lr[0]);
             matrices_["K_B_lr"]->subtract(K_lr[1]);
 
-            matrices_["J_A_lr"]->scale(coeff);
-            matrices_["J_B_lr"]->scale(coeff);
-            matrices_["K_A_lr"]->scale(coeff);
-            matrices_["K_B_lr"]->scale(coeff);
 
             matrices_["J_B_lr"]->print();
         }
@@ -2717,6 +2719,15 @@ void FISAPT::unify_part2() {
             matrices_["K_A_lr"] = matrices_["K_A_lrerf"]->clone();
             matrices_["K_B_lr"] = matrices_["K_B_lrerf"]->clone();
 
+            J_lr[0]->scale(coeff);
+            J_lr[1]->scale(coeff);
+            K_lr[0]->scale(coeff);
+            K_lr[1]->scale(coeff);
+            J_lr[2]->scale(coeff);
+            J_lr[3]->scale(coeff);
+            K_lr[2]->scale(coeff);
+            K_lr[3]->scale(coeff);
+
             matrices_["J_A_lr"]->subtract(J_lr[0]);
             matrices_["J_B_lr"]->subtract(J_lr[1]);
             matrices_["K_A_lr"]->subtract(K_lr[0]);
@@ -2727,10 +2738,6 @@ void FISAPT::unify_part2() {
             matrices_["K_A_lr"]->subtract(K_lr[2]);
             matrices_["K_B_lr"]->subtract(K_lr[3]);
 
-            matrices_["J_A_lr"]->scale(coeff);
-            matrices_["J_B_lr"]->scale(coeff);
-            matrices_["K_A_lr"]->scale(coeff);
-            matrices_["K_B_lr"]->scale(coeff);
 
             matrices_["J_B_lr"]->print();
 
@@ -2739,15 +2746,16 @@ void FISAPT::unify_part2() {
             matrices_["JLB_lr"] = Jerf_lr[1]->clone();
             matrices_["KLB_lr"] = Kerf_lr[1]->clone();
 
+            J_lr[0]->scale(coeff);
+            K_lr[0]->scale(coeff);
+            J_lr[1]->scale(coeff);
+            K_lr[1]->scale(coeff);
+
             matrices_["JLA_lr"]->subtract(J_lr[0]);
             matrices_["KLA_lr"]->subtract(K_lr[0]);
             matrices_["JLB_lr"]->subtract(J_lr[1]);
             matrices_["KLB_lr"]->subtract(K_lr[1]);
 
-            matrices_["JLA_lr"]->scale(coeff);
-            matrices_["KLA_lr"]->scale(coeff);
-            matrices_["JLB_lr"]->scale(coeff);
-            matrices_["KLB_lr"]->scale(coeff);
 
         }
 
@@ -3710,8 +3718,9 @@ void FISAPT::exch() {
 
         jklr_->compute(options_.get_double("RSEP_OMEGA"), 0.0, 0.0);
         K_O_lr = Kerf_lr[0]->clone();
+        K_lr[0]->scale(coeff);
         K_O_lr->subtract(K_lr[0]);
-        K_O_lr->scale(coeff);
+
     }
 
     double Exch10_2M = 0.0;
@@ -3805,8 +3814,9 @@ void FISAPT::exch() {
 
         jklr_->compute(options_.get_double("RSEP_OMEGA"), 0.0, 0.0);
         K_AS_lr = Kerf_lr[0]->clone();
+        K_lr[0]->scale(coeff);
         K_AS_lr->subtract(K_lr[0]);
-        K_AS_lr->scale(coeff);
+
     }
 
     // => Accumulation <= //
@@ -3966,15 +3976,17 @@ void FISAPT::exch() {
         J_T_AB_n_lr = Jerf_lr[1]->clone();
         K_T_AB_n_lr = Kerf_lr[1]->clone();
 
+        J_lr[0]->scale(coeff);
+        K_lr[0]->scale(coeff);
+        J_lr[1]->scale(coeff);
+        K_lr[1]->scale(coeff);
+
         J_T_A_n_lr->subtract(J_lr[0]);
         K_T_A_n_lr->subtract(K_lr[0]);
         J_T_AB_n_lr->subtract(J_lr[1]);
         K_T_AB_n_lr->subtract(K_lr[1]);
 
-        J_T_A_n_lr->scale(coeff);
-        K_T_A_n_lr->scale(coeff);
-        J_T_AB_n_lr->scale(coeff);
-        K_T_AB_n_lr->scale(coeff);
+
 
     }
 
@@ -4162,15 +4174,17 @@ void FISAPT::exch() {
         K_AOY_lr = Kerf_lr[2]->clone();
         K_XOY_lr = Kerf_lr[3]->clone();
 
+        K_lr[0]->scale(coeff);
+        K_lr[1]->scale(coeff);
+        K_lr[2]->scale(coeff);
+        K_lr[3]->scale(coeff);
+
         K_AOB_lr->subtract(K_lr[0]);
         K_XOB_lr->subtract(K_lr[1]);
         K_AOY_lr->subtract(K_lr[2]);
         K_XOY_lr->subtract(K_lr[3]);
 
-        K_AOB_lr->scale(coeff);
-        K_XOB_lr->scale(coeff);
-        K_AOY_lr->scale(coeff);
-        K_XOY_lr->scale(coeff);
+
 
     }
 
@@ -4655,15 +4669,17 @@ void FISAPT::exch() {
         J_os_lr = Jerf_lr[1]->clone();
         K_os_lr = Kerf_lr[1]->clone();
 
+        J_lr[0]->scale(coeff);
+        K_lr[0]->scale(coeff);
+        J_lr[1]->scale(coeff);
+        K_lr[1]->scale(coeff);
+
         J_ss_lr->subtract(J_lr[0]);
         K_ss_lr->subtract(K_lr[0]);
         J_os_lr->subtract(J_lr[1]);
         K_os_lr->subtract(K_lr[1]);
 
-        J_ss_lr->scale(coeff);
-        K_ss_lr->scale(coeff);
-        J_os_lr->scale(coeff);
-        K_os_lr->scale(coeff);
+
 
     }
 
@@ -4861,15 +4877,17 @@ void FISAPT::exch() {
         J2_os_lr = Jerf_lr[1]->clone();
         K2_os_lr = Kerf_lr[1]->clone();
 
+        J_lr[0]->scale(coeff);
+        K_lr[0]->scale(coeff);
+        J_lr[1]->scale(coeff);
+        K_lr[1]->scale(coeff);
+
         J2_ss_lr->subtract(J_lr[0]);
         K2_ss_lr->subtract(K_lr[0]);
         J2_os_lr->subtract(J_lr[1]);
         K2_os_lr->subtract(K_lr[1]);
 
-        J2_ss_lr->scale(coeff);
-        K2_ss_lr->scale(coeff);
-        J2_os_lr->scale(coeff);
-        K2_os_lr->scale(coeff);
+
 
     }
 
@@ -5118,17 +5136,18 @@ void FISAPT::ind() {
             K_XOY_lr = Kerf_lr[3]->clone();
             J_XOY_lr = Jerf_lr[3]->clone();
 
+            K_lr[0]->scale(coeff);
+            K_lr[1]->scale(coeff);
+            K_lr[2]->scale(coeff);
+            K_lr[3]->scale(coeff);
+            J_lr[3]->scale(coeff);
+
             K_AOB_lr->subtract(K_lr[0]);
             K_XOB_lr->subtract(K_lr[1]);
             K_AOY_lr->subtract(K_lr[2]);
             K_XOY_lr->subtract(K_lr[3]);
             J_XOY_lr->subtract(J_lr[3]);
 
-            K_AOB_lr->scale(coeff);
-            K_XOB_lr->scale(coeff);
-            K_AOY_lr->scale(coeff);
-            K_XOY_lr->scale(coeff);
-            J_XOY_lr->scale(coeff);
 
              
         }
@@ -5331,6 +5350,20 @@ void FISAPT::ind() {
             K_P_B_lr = Kerf_lr[1]->clone();
             K_P_A_lr = Kerf_lr[2]->clone();
 
+            J_lr[0]->scale(coeff);
+            J_lr[1]->scale(coeff);
+            J_lr[2]->scale(coeff);
+            J_lr[3]->scale(coeff);
+            J_lr[4]->scale(coeff);
+            J_lr[5]->scale(coeff);
+            J_lr[6]->scale(coeff);
+            J_lr[7]->scale(coeff);
+            J_lr[8]->scale(coeff);
+          
+            K_lr[0]->scale(coeff);
+            K_lr[1]->scale(coeff);
+            K_lr[2]->scale(coeff);
+
             J_O_lr->subtract(J_lr[0]);
             J_P_B_lr->subtract(J_lr[1]);
             J_P_A_lr->subtract(J_lr[2]);
@@ -5345,19 +5378,6 @@ void FISAPT::ind() {
             K_P_B_lr->subtract(K_lr[1]);
             K_P_A_lr->subtract(K_lr[2]);
 
-            J_O_lr->scale(coeff);
-            J_P_B_lr->scale(coeff);
-            J_P_A_lr->scale(coeff);
-            J_P_BXY_lr->scale(coeff);
-            J_P_YXB_lr->scale(coeff);
-            J_P_YAY_lr->scale(coeff);
-            J_P_AYX_lr->scale(coeff);
-            J_P_XYA_lr->scale(coeff);
-            J_P_XBX_lr->scale(coeff);
-          
-            K_O_lr->scale(coeff);
-            K_P_B_lr->scale(coeff);
-            K_P_A_lr->scale(coeff);
 
             }
 
@@ -5722,6 +5742,14 @@ void FISAPT::ind() {
             K_P_B_lr = Kerf_lr[1]->clone();
             K_P_A_lr = Kerf_lr[2]->clone();
 
+            J_lr[0]->scale(coeff);
+            J_lr[1]->scale(coeff);
+            J_lr[2]->scale(coeff);
+          
+            K_lr[0]->scale(coeff);
+            K_lr[1]->scale(coeff);
+            K_lr[2]->scale(coeff);
+
             J_O_lr->subtract(J_lr[0]);
             J_P_B_lr->subtract(J_lr[1]);
             J_P_A_lr->subtract(J_lr[2]);
@@ -5730,13 +5758,7 @@ void FISAPT::ind() {
             K_P_B_lr->subtract(K_lr[1]);
             K_P_A_lr->subtract(K_lr[2]);
 
-            J_O_lr->scale(coeff);
-            J_P_B_lr->scale(coeff);
-            J_P_A_lr->scale(coeff);
-          
-            K_O_lr->scale(coeff);
-            K_P_B_lr->scale(coeff);
-            K_P_A_lr->scale(coeff);
+
 
 
         }

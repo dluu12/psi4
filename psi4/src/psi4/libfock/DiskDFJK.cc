@@ -2066,7 +2066,7 @@ void DiskDFJK::initialize_JK_core(double omega, double eta, double eta1) {
 //    Jinv->form_eig_inverse(eta_, condition_);
 
     auto Jinv = std::make_shared<FittingMetric>(auxiliary_, omega_, eta_,  true);
-    Jinv->form_eig_inverse(condition_);
+    Jinv->form_eig_inverse(omega_, eta_, condition_);
     double** Jinvp = Jinv->get_metric()->pointer();
 
     timer_off("JK: (A|Q)^-1/2");
@@ -3271,7 +3271,7 @@ void DiskDFJK::initialize_JK_disk(double omega, double eta, double eta1) {
 
     // Form the J symmetric inverse
     auto Jinv = std::make_shared<FittingMetric>(auxiliary_, omega_, eta_, true);
-    Jinv->form_eig_inverse(condition_);
+    Jinv->form_eig_inverse(omega_, eta_, condition_);
     double** Jinvp = Jinv->get_metric()->pointer();
 
     // Synch up

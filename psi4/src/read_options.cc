@@ -1195,7 +1195,7 @@ int read_options(const std::string &name, Options &options, bool suppress_printi
         options.add_bool("FISAPT_CUBE_LINKIHOS", false);
         /*- Generate cube files for fragment density matrices? -*/
         options.add_bool("FISAPT_CUBE_DENSMAT", false);
-        options.add_str("RSEP_INT", "gau", "gau erf");
+        options.add_str("RSEP_INT", "gau", "gau erf erfgau");
         // => F-SAPT Options <= //
 
         /*- Do an F-SAPT analysis? -*/
